@@ -43,9 +43,29 @@ router.post("/",fileUpload.diskLoader.single("file"),async (req, res) => {
     
   }
 );
+async function firebaseUpload(file: Express.Multer.File) {
+    // Upload to firebase storage
+    const filename = Date.now() + "-" + Math.round(Math.random() * 1000) + ".png";
+    // Define locations to be saved on storag
+    const storageRef = ref(storage, "/imagesvs/" + filename);
+    // define file detail
+    const metaData = { contentType: file.mimetype }; 
+    // Start upload
+    const snapshost = await uploadBytesResumable(
+      storageRef,
+      file.buffer,
+      metaData
+    );
+    // Get url image from storage
+    const url = await getDownloadURL(snapshost.ref);
+  
+    return url;
+  }
+
+
 //=========================================================================================deleadimage
 router.delete("/deleadimageFirebase",async (req, res) => {
-  const path = req.body['path'];
+  const path = req.query.path;
   console.log("In delete func:  "+path);
   
   // res.send("Path: "+path)
@@ -54,32 +74,20 @@ router.delete("/deleadimageFirebase",async (req, res) => {
   res.status(200).send("delete image");
 });
 
-async function firebaseUpload(file: Express.Multer.File) {
-  // Upload to firebase storage
-  const filename = Date.now() + "-" + Math.round(Math.random() * 1000) + ".png";
-  // Define locations to be saved on storag
-  const storageRef = ref(storage, "/imagesvs/" + filename);
-  // define file detail
-  const metaData = { contentType: file.mimetype }; 
-  // Start upload
-  const snapshost = await uploadBytesResumable(
-    storageRef,
-    file.buffer,
-    metaData
-  );
-  // Get url image from storage
-  const url = await getDownloadURL(snapshost.ref);
-
-  return url;
-}
 
 // ลบรูปภาพใน firebase
 async function firebaseDelete(path: string) {
     console.log("In firebase Delete:"+path);
-    const storageRef = ref(storage, "/imagesvs/" + path.split("/imagesvs/")[1].split("?")[0]);
-    await deleteObject(storageRef);
+    try {
+        const urlimg = path.split("/imagesvs/")[1].split("?")[0];
+        if (urlimg) {
+            const urlimg = ref(storage, "/imagesvs/");
+            const snapshost = await deleteObject(urlimg);
+   }
+   } catch (error) {
+       console.log("no image in firebase");
+   }
 }
-
 
 // // ลบรูปภาพใน firebase
 // async function firebaseDelete(path: string) {

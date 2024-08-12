@@ -41,7 +41,7 @@ async function selectPhotoByPID(pid : number) : Promise<PhotoModel>  {
 
 // function คำนวนคะแนนใหม่ของทั้ง 2 รูปที่ส่งเข้ามา
 // โดยรับ คะแนนของรูปภาพที่ 1 และ คะแนนของรูปภาพที่ 2 เข้ามา พร้อมกับ ผลการแข่งขันของรูปภาพ 1 กับ 2 (0 คือ แพ้, 1 คือ ชนะ)
-// โดย Method นี้จะ retu
+// โดย Method นี้จะ return คะแนนใหม่ของรูปภาพกลับออกไป โดยมีชนิดเป็น : number
 function newScoreOfThePhoto(Ra : number, Sa : number, Rb : number, Sb : number) : number {
     // กำหนดค่า k คือปริมาณการเปลี่ยนแปลงของคะแนน --> 16,24,32 (ถ้ามีค่ามาก score จะ + มาก)
     let k = 32;
